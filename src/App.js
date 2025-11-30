@@ -1,24 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
 
+import { BrowserRouter, Link, Route, Routes } from 'react-router';
+import './App.css';
+import LoginPage from './components/loginPage/loginPage.tsx';
+import NavBar from './components/navBar/navBar.tsx';
+import UploadPage from './components/uploadPage/uploadPage.tsx';
+import { useSelector } from 'react-redux';
+import { login,logout } from './redux/reducers/loginSlice.tsx';
 function App() {
+  const isLoggedIn = useSelector((state)=> state.user.isLoggedIn);
+  console.log("isLoggedIn:", isLoggedIn);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+   <>
+      <BrowserRouter>
+      {isLoggedIn ? <NavBar/> : null}  
+      <Routes>
+        <Route path='/' element={<LoginPage/>}/>
+        <Route path='/upload' element={<UploadPage/>}/>
+      </Routes>
+      
+      </BrowserRouter>
+  </>
   );
 }
 
