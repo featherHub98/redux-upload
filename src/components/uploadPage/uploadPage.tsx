@@ -1,13 +1,12 @@
 import {useState,useEffect} from "react"
 import { Container, Card, Form, ListGroup, Button, Alert } from 'react-bootstrap';
-import { upload } from "@testing-library/user-event/dist/upload"
-import { UseSelector } from "react-redux"
+
 import { useDispatch } from "react-redux"
 interface StoredFile  {
           id: number,
           name : string | undefined,
           type : string | undefined,
-          data : string | ArrayBuffer | null
+          data : string | ArrayBuffer | null | undefined
         };
 
 export default function UploadPage() {
@@ -32,11 +31,11 @@ export default function UploadPage() {
       }
       const reader = new FileReader();
       reader.onload = (event) => {
-        const newFile = {
+        const newFile:StoredFile = {
           id: Date.now(),
           name : selectedFile.name||'',
           type : selectedFile.type ||'',
-          data : (event.target?.result )
+          data : (event.target?.result as string )
         };
         const updatedFiles = [...files,newFile]
         //dispatch(upload(newFile))
