@@ -1,7 +1,8 @@
 import {useState,useEffect} from "react"
-import { upload,download } from "@testing-library/user-event/dist/upload"
+import { Container, Card, Form, ListGroup, Button, Alert } from 'react-bootstrap';
+import { upload } from "@testing-library/user-event/dist/upload"
 import { UseSelector } from "react-redux"
-
+import { useDispatch } from "react-redux"
 interface StoredFile  {
           id: number,
           name : string,
@@ -10,7 +11,7 @@ interface StoredFile  {
         };
 
 export default function UploadPage() {
- 
+    const dispatch = useDispatch();
     const [files,setFiles] = useState<StoredFile[]>([])
     const [error,setError] = useState('')
     useEffect (()=>{
@@ -38,6 +39,7 @@ export default function UploadPage() {
           data : (event.target!.result as string)
         };
         const updatedFiles = [...files,newFile]
+        //dispatch(upload(newFile))
         setFiles(updatedFiles)
         try {
         localStorage.setItem("my_stored_files",JSON.stringify(updatedFiles))
@@ -55,54 +57,71 @@ export default function UploadPage() {
 
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '500px' }}>
-      <h2>Local Storage File Manager</h2>
+    <Container className="d-flex justify-content-center py-5">
       
-     
-      <div style={{ border: '2px dashed #ccc', padding: '20px', marginBottom: '20px' }}>
-        <input type="file" onChange={handleUpload} />
-        <p style={{ fontSize: '0.8rem', color: '#666' }}>Max size: 10KB</p>
-        {error && <p style={{ color: 'red', fontWeight: 'bold' }}>{error}</p>}
-      </div>
-
-      
-      <h3>Stored Files ({files.length})</h3>
-      
-      {files.length === 0 && <p>No files stored yet.</p>}
-
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {files.map((file) => (
-          <li key={file.id} style={{ 
-              borderBottom: '1px solid #eee', 
-              padding: '10px 0', 
-              display: 'flex', 
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
+      <Card style={{ width: '100%', maxWidth: '550px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+        
+        <Card.Header as="h2" className="text-center bg-primary text-white">
+          <i className="bi bi-folder-fill me-2"></i>Local Storage File Manager
+        </Card.Header>
+        
+        <Card.Body>
+          
+          <Card className="mb-4 p-3 bg-light border-dashed">
+            <h5 className="mb-3">Upload New File</h5>
+            <Form.Group controlId="formFile" className="mb-2">
+              <Form.Control type="file" onChange={handleUpload} />
+            </Form.Group>
+            <Form.Text className="text-muted">
+              Maximum file size: 10 KB.
+            </Form.Text>
             
-            <span>{file.name}</span>
-            
-            <div>
-             
-              {/* We use the Base64 data directly as the href */}
-              <a 
-                href={file.data} 
-                download={file.name} // This attribute forces the browser to download
-                style={{ textDecoration: 'none', marginRight: '10px', color: 'blue' }}
-              >
-                Download
-              </a>
+            {error && <Alert variant="danger" className="mt-3 py-2">{error}</Alert>}
+          </Card>
 
-              <button 
-                onClick={() => deleteFile(file.id)}
-                style={{ color: 'red', cursor: 'pointer' }}
-              >
-                Delete
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
+          <h3 className="mb-3">Stored Files ({files.length})</h3>
+
+          {files.length === 0 && (
+            <Alert variant="info" className="text-center">No files stored yet. Upload one to get started!</Alert>
+          )}
+
+          {files.length > 0 && (
+            <ListGroup variant="flush">
+              {files.map((file) => (
+                <ListGroup.Item 
+                  key={file.id} 
+                  className="d-flex justify-content-between align-items-center"
+                >
+                  <span className="fw-bold text-truncate me-2" style={{ maxWidth: '60%' }}>
+                    {file.name}
+                  </span>
+                  
+                  <div>
+                    <Button 
+                      as="a"
+                      href={file.data} 
+                      download={file.name}
+                      variant="outline-success" 
+                      size="sm" 
+                      className="me-2"
+                    >
+                      Download
+                    </Button>
+
+                    <Button 
+                      onClick={() => deleteFile(file.id)}
+                      variant="outline-danger" 
+                      size="sm"
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+          )}
+          
+        </Card.Body>
+      </Card>
+    </Container>  )
 }
