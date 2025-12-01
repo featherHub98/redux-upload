@@ -21,6 +21,7 @@ import Container from 'react-bootstrap/esm/Container';
       return await fetch('data.json')
     }
     const submitHandler = (e:any)=>{
+      //change to exact type
         e.preventDefault();
       const usersPromise:Promise<User[]> = getUser().then(res=>res.json());
       usersPromise.then((user :User[] )=>{
@@ -28,11 +29,12 @@ import Container from 'react-bootstrap/esm/Container';
         user.forEach((u: User)=>{
            if (email === u.email && pwd === u.pwd){
            isAuthenticated = true;
+           
         }})
         if(isAuthenticated)
         {dispatch(login({email : email}))
           navigate('/upload')}
-      })
+      })//to refactor using isLoggedIn from redux store
      
     }
   return (

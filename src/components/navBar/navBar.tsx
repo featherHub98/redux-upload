@@ -3,13 +3,13 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
 import { logout } from '../../redux/reducers/loginSlice.tsx';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate,NavLink } from 'react-router';
 
 function NavBar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const email = useSelector((state: any) => state.user.email);
   const handleLogout = () => {
     dispatch(logout({}));
     navigate("/");
@@ -19,15 +19,19 @@ function NavBar() {
     <Navbar expand="lg" bg="dark" variant="dark">
       <Container>
         <Navbar.Brand href="/" className="fw-bold fs-4">newApp</Navbar.Brand>
+        {/*to be fixed to use router */}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           
           <Nav className="me-auto">
-            <Nav.Link href="/">Home</Nav.Link>
-            <Nav.Link href="/upload">Upload</Nav.Link>
+            <NavLink to="/home">Home</NavLink>
+            <NavLink to="/upload">Upload</NavLink>
           </Nav>
 
           <Nav>
+            <Navbar.Text className="me-3">
+              Signed in as: <span className="fw-bold">{email}</span>
+            </Navbar.Text>  
             <Button 
               onClick={handleLogout} 
               variant="outline-light"

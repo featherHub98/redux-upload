@@ -5,9 +5,9 @@ import { UseSelector } from "react-redux"
 import { useDispatch } from "react-redux"
 interface StoredFile  {
           id: number,
-          name : string,
-          type : string,
-          data : string
+          name : string | undefined,
+          type : string | undefined,
+          data : string | ArrayBuffer | null
         };
 
 export default function UploadPage() {
@@ -34,9 +34,9 @@ export default function UploadPage() {
       reader.onload = (event) => {
         const newFile = {
           id: Date.now(),
-          name : selectedFile.name,
-          type : selectedFile.type,
-          data : (event.target!.result as string)
+          name : selectedFile.name||'',
+          type : selectedFile.type ||'',
+          data : (event.target?.result )
         };
         const updatedFiles = [...files,newFile]
         //dispatch(upload(newFile))
