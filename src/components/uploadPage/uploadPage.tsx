@@ -6,7 +6,7 @@ interface StoredFile  {
           id: number,
           name : string | undefined,
           type : string | undefined,
-          data : string | ArrayBuffer | null | undefined
+          data : string 
         };
 
 export default function UploadPage() {
@@ -21,8 +21,8 @@ export default function UploadPage() {
       }
       setFiles(savedFiles)
     },[]);
-    const handleUpload = (e:any)=>{
-      const selectedFile = e.target.files[0];
+    const handleUpload = (e:React.ChangeEvent<HTMLInputElement>)=>{
+      const selectedFile = e.target.files?.[0];
       setError('');
       if (!selectedFile) return ;
       if(selectedFile.size > 10240){
@@ -31,19 +31,22 @@ export default function UploadPage() {
       }
       const reader = new FileReader();
       reader.onload = (event) => {
-        const newFile:StoredFile = {
+         if (typeof event.target?.result === "string") {
+        const newFile: StoredFile = {
           id: Date.now(),
-          name : selectedFile.name||'',
-          type : selectedFile.type ||'',
-          data : (event.target?.result as string )
+          name: selectedFile.name,
+          type: selectedFile.type,
+          data: event.target.result,
         };
-        const updatedFiles = [...files,newFile]
-        //dispatch(upload(newFile))
-        setFiles(updatedFiles)
+
+        const updatedFiles = [...files, newFile];
+        setFiles(updatedFiles);
+
         try {
-        localStorage.setItem("my_stored_files",JSON.stringify(updatedFiles))
-      } catch (error) {
-        setError("Storage quota exceeded! Clear some files.");
+          localStorage.setItem("my_stored_files", JSON.stringify(updatedFiles));
+        } catch (error) {
+          setError("Storage quota exceeded! Clear some files.");
+        }
       }
       };
       reader.readAsDataURL(selectedFile);

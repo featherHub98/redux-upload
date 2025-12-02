@@ -6,9 +6,12 @@ import { useNavigate } from 'react-router';
 import { login } from '../../redux/reducers/loginSlice.tsx';
 import { useDispatch } from 'react-redux';
 import Container from 'react-bootstrap/esm/Container';
+import axios from 'axios';
  function LoginPage() {
   
   const dispatch = useDispatch();
+
+  //const isLoggedIn = useSelector((state:any)=>state.user.isLoggedIn)
     const navigate = useNavigate();
     const [email,setEmail] = useState('');
     const [pwd,setPwd] = useState('')
@@ -18,23 +21,23 @@ import Container from 'react-bootstrap/esm/Container';
       pwd : string
     }
     const getUser= async ()=>{
-      return await fetch('data.json')
+      return await axios.get('data.json')
     }
-    const submitHandler = (e:any)=>{
-      //change to exact type
+    const submitHandler = (e:React.FormEvent<HTMLFormElement>)=>{
+     
         e.preventDefault();
-      const usersPromise:Promise<User[]> = getUser().then(res=>res.json());
+      const usersPromise:Promise<User[]> = getUser().then(res=>res.data);
       usersPromise.then((user :User[] )=>{
-        let isAuthenticated = false;  
+        let notNull = false;  
         user.forEach((u: User)=>{
            if (email === u.email && pwd === u.pwd){
-           isAuthenticated = true;
+           notNull = true;
            
         }})
-        if(isAuthenticated)
+        if(notNull)
         {dispatch(login({email : email}))
           navigate('/upload')}
-      })//to refactor using isLoggedIn from redux store
+      })
      
     }
   return (
